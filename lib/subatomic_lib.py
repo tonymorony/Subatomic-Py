@@ -82,3 +82,14 @@ def refresh_asks_list(rpc_proxy, base, rel, asks_list):
 def refresh_orders_list(rpc_proxy, base, rel, bids_list, asks_list):
     refresh_bids_list(rpc_proxy, base, rel, bids_list)
     refresh_asks_list(rpc_proxy, base, rel, asks_list)
+
+
+def place_buy_order(rpc_proxy, base, rel, base_amount, rel_amount, receiving_address):
+    print(base)
+    print(rel)
+    print(base_amount)
+    print(rel_amount)
+    print(receiving_address)
+    dex_pubkey = rpc_proxy.DEX_stats()["publishable_pubkey"]
+    order_data = rpc_proxy.DEX_broadcast(receiving_address, "5", base, rel, dex_pubkey, str(base_amount), str(rel_amount))
+    print(order_data)
