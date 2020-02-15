@@ -93,3 +93,10 @@ def place_buy_order(rpc_proxy, base, rel, base_amount, rel_amount, receiving_add
     dex_pubkey = rpc_proxy.DEX_stats()["publishable_pubkey"]
     order_data = rpc_proxy.DEX_broadcast(receiving_address, "5", base, rel, dex_pubkey, str(base_amount), str(rel_amount))
     print(order_data)
+    return order_data
+
+
+def update_text_widget_content(text_widget, string_to_put):
+    text_widget.configure(state='normal')
+    text_widget.replace("1.0", "100.0", string_to_put)
+    text_widget.configure(state='disabled')
