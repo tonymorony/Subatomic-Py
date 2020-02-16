@@ -120,6 +120,10 @@ def fetch_daemons_status(daemons_list):
         except Exception as e:
             print(e)
             daemons_info[ticker]["status"] = "offline"
+            daemons_info[ticker]["balance"] = "N/A"
+            daemons_info[ticker]["blocks"] = "N/A"
+            daemons_info[ticker]["longestchain"] = "N/A"
+            daemons_info[ticker]["is_synced"] = "N/A"
     print(daemons_info)
     return daemons_info
 
