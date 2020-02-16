@@ -4,12 +4,13 @@ from lib import subatomic_lib
 
 '''
 TODO: 
+- orders filling :) 
 - daemons management
 - balances tracking
 - checks that user control all needed addresses
 - receiving t/z addr in app settings
 - my open orders (tab2)
-- trades history (tab2) - split by analogy with tab1
+- trades history (tab2) - split by analogy with tab1 ?
 '''
 
 dex_proxy = subatomic_lib.def_credentials("DEX")
@@ -23,13 +24,25 @@ supported_coins = ["KMD", "PIRATE"]
 
 # tabs control
 tab_parent = ttk.Notebook(root)
+tab0 = ttk.Frame(tab_parent)
 tab1 = ttk.Frame(tab_parent)
 tab2 = ttk.Frame(tab_parent)
+tab_parent.add(tab0, text="Daemons control")
 tab_parent.add(tab1, text="Orderbook")
 tab_parent.add(tab2, text="Create order")
 tab_parent.pack(expand=True, fill="both")
 
 # widgets creation
+# tab 0
+status_columns = ["status", "balance", "blocks", "longest chain", "is synced"]
+daemons_states = ttk.Treeview(tab0, columns=status_columns)
+daemons_states.heading('#0', text='ticker')
+for i in range(1, len(status_columns)+1):
+    daemons_states.heading("#"+str(i), text=status_columns[i-1])
+
+get_daemons_states_button = ttk.Button(tab0, text="Update statuses", command=lambda: subatomic_lib.fill_daemons_statuses_table(daemons_states,
+                                                                                                                            subatomic_lib.fetch_daemons_status(supported_coins)))
+
 # tab 1
 base_selector_orderbook = ttk.Label(tab1, text="Select base: ")
 base_combobox_orderbook = ttk.Combobox(tab1)
@@ -81,6 +94,12 @@ order_creation_text = tk.Text(tab2, width=100, height=10)
 order_creation_text.configure(state='disabled')
 
 # widgets drawing
+
+# tab0
+get_daemons_states_button.pack()
+daemons_states.pack(fill=tk.BOTH, expand=1)
+
+
 # tab1
 base_selector_orderbook.grid(row=1, column=1, pady=(10,0), padx=(10, 0))
 base_combobox_orderbook.grid(row=1, column=2, pady=(10,0), padx=(10, 0))
@@ -108,5 +127,8 @@ rel_amount_label.grid(row=2, column=3, pady=(10,0), padx=(10, 0))
 rel_amount.grid(row=2, column=4, pady=(10,0), padx=(10, 0))
 place_order_button.grid(row=3, column=1, pady=(10,0), padx=(10, 0))
 order_creation_text.grid(row=4, column=1, columnspan=5, pady=(10,0), padx=(10, 0))
+
+# pre-fetching daemons statuses
+root.after(100, lambda: subatomic_lib.fill_daemons_statuses_table(daemons_states, subatomic_lib.fetch_daemons_status(supported_coins)))
 
 root.mainloop()

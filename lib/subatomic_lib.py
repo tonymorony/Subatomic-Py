@@ -65,8 +65,8 @@ def refresh_bids_list(rpc_proxy, base, rel, bids_list):
     orderbook_data = get_orderbook_data(rpc_proxy, base, rel)
     bids_data = orderbook_data["bids"]
     print(orderbook_data)
+    bids_list.delete(*bids_list.get_children())
     for bid in bids_data:
-        bids_list.delete(*bids_list.get_children())
         bids_list.insert("", "end", text=bid["id"], values=[bid["price"], bid["baseamount"], bid["relamount"], bid["timestamp"], bid["hash"]])
 
 
@@ -74,8 +74,8 @@ def refresh_asks_list(rpc_proxy, base, rel, asks_list):
     orderbook_data = get_orderbook_data(rpc_proxy, base, rel)
     asks_data = orderbook_data["asks"]
     print(orderbook_data)
+    asks_list.delete(*asks_list.get_children())
     for ask in asks_data:
-        asks_list.delete(*asks_list.get_children())
         asks_list.insert("", "end", text=ask["id"], values=[ask["price"], ask["baseamount"], ask["relamount"], ask["timestamp"], ask["hash"]])
 
 
@@ -100,3 +100,33 @@ def update_text_widget_content(text_widget, string_to_put):
     text_widget.configure(state='normal')
     text_widget.replace("1.0", "100.0", string_to_put)
     text_widget.configure(state='disabled')
+
+
+def fetch_daemons_status(daemons_list):
+    daemons_info = {}
+    for ticker in daemons_list:
+        daemons_info[ticker] = {}
+        try:
+            temp_proxy = def_credentials(ticker)
+            getinfo_output = temp_proxy.getinfo()
+            daemons_info[ticker]["status"] = "online"
+            daemons_info[ticker]["balance"] = getinfo_output["balance"]
+            daemons_info[ticker]["blocks"] = getinfo_output["blocks"]
+            daemons_info[ticker]["longestchain"] = getinfo_output["longestchain"]
+            if getinfo_output["blocks"] == getinfo_output["longestchain"]:
+                daemons_info[ticker]["is_synced"] = "True"
+            else:
+                daemons_info[ticker]["is_synced"] = "False"
+        except Exception as e:
+            print(e)
+            daemons_info[ticker]["status"] = "offline"
+    print(daemons_info)
+    return daemons_info
+
+
+def fill_daemons_statuses_table(statuses_table, daemons_status_info):
+    statuses_table.delete(*statuses_table.get_children())
+    for ticker in daemons_status_info:
+        statuses_table.insert("", "end", text=ticker, values=[daemons_status_info[ticker]["status"], daemons_status_info[ticker]["balance"],
+                                                              daemons_status_info[ticker]["blocks"], daemons_status_info[ticker]["longestchain"],
+                                                              daemons_status_info[ticker]["is_synced"]])
