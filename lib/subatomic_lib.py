@@ -110,7 +110,10 @@ def fetch_daemons_status(daemons_list):
             temp_proxy = def_credentials(ticker)
             getinfo_output = temp_proxy.getinfo()
             daemons_info[ticker]["status"] = "online"
-            daemons_info[ticker]["balance"] = getinfo_output["balance"]
+            if ticker == "PIRATE":
+                daemons_info[ticker]["balance"] = temp_proxy.z_gettotalbalance()["total"]
+            else:
+                daemons_info[ticker]["balance"] = getinfo_output["balance"]
             daemons_info[ticker]["blocks"] = getinfo_output["blocks"]
             daemons_info[ticker]["longestchain"] = getinfo_output["longestchain"]
             if getinfo_output["blocks"] == getinfo_output["longestchain"]:
