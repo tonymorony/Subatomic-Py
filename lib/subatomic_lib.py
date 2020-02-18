@@ -66,8 +66,11 @@ def refresh_bids_list(rpc_proxy, base, rel, bids_list):
     bids_data = orderbook_data["bids"]
     print(orderbook_data)
     bids_list.delete(*bids_list.get_children())
-    for bid in bids_data:
-        bids_list.insert("", "end", text=bid["id"], values=[bid["price"], bid["baseamount"], bid["relamount"], bid["timestamp"], bid["hash"]])
+    if len(bids_data) == 0:
+        bids_list.insert("", "end", text="No orders yet")
+    else:
+        for bid in bids_data:
+            bids_list.insert("", "end", text=bid["id"], values=[bid["price"], bid["baseamount"], bid["relamount"], bid["timestamp"], bid["hash"]])
 
 
 def refresh_asks_list(rpc_proxy, base, rel, asks_list):
@@ -75,8 +78,11 @@ def refresh_asks_list(rpc_proxy, base, rel, asks_list):
     asks_data = orderbook_data["asks"]
     print(orderbook_data)
     asks_list.delete(*asks_list.get_children())
-    for ask in asks_data:
-        asks_list.insert("", "end", text=ask["id"], values=[ask["price"], ask["baseamount"], ask["relamount"], ask["timestamp"], ask["hash"]])
+    if len(asks_data) == 0:
+        asks_list.insert("", "end", text="No orders yet")
+    else:
+        for ask in asks_data:
+            asks_list.insert("", "end", text=ask["id"], values=[ask["price"], ask["baseamount"], ask["relamount"], ask["timestamp"], ask["hash"]])
 
 
 def refresh_orders_list(rpc_proxy, base, rel, bids_list, asks_list):
