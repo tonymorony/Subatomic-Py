@@ -7,6 +7,7 @@ from tkinter import ttk
 from subprocess import Popen
 
 
+# just to set custom timeout
 class CustomProxy(slickrpc.Proxy):
     def __init__(self,
                  service_url=None,
@@ -73,7 +74,9 @@ def refresh_bids_list(rpc_proxy, base, rel, bids_list):
         bids_list.insert("", "end", text="No orders yet")
     else:
         for bid in bids_data:
-            bids_list.insert("", "end", text=bid["id"], values=[bid["price"], bid["baseamount"], bid["relamount"], bid["timestamp"], bid["hash"]])
+            # TODO: convert timestamp to user readable data
+            bids_list.insert("", "end", text=bid["id"], values=[bid["price"], bid["baseamount"], bid["relamount"],
+                            bid["timestamp"], bid["hash"], orderbook_data["base"], orderbook_data["rel"], "bid"])
 
 
 def refresh_asks_list(rpc_proxy, base, rel, asks_list):
@@ -85,7 +88,9 @@ def refresh_asks_list(rpc_proxy, base, rel, asks_list):
         asks_list.insert("", "end", text="No orders yet")
     else:
         for ask in asks_data:
-            asks_list.insert("", "end", text=ask["id"], values=[ask["price"], ask["baseamount"], ask["relamount"], ask["timestamp"], ask["hash"]])
+            # TODO: convert timestamp to user readable data`
+            asks_list.insert("", "end", text=ask["id"], values=[ask["price"], ask["baseamount"], ask["relamount"],
+                                                                ask["timestamp"], ask["hash"], orderbook_data["base"], orderbook_data["rel"], "ask"])
 
 
 def refresh_orders_list(rpc_proxy, base, rel, bids_list, asks_list):
@@ -94,7 +99,7 @@ def refresh_orders_list(rpc_proxy, base, rel, bids_list, asks_list):
 
 
 def start_subatomic_maker_loop(base, rel):
-    command = "./subatomic " + base + ' " " ' + rel
+    command = "./subatomic " + rel + ' "" ' + base
     subatomic_handle = Popen(command, shell=True)
     return subatomic_handle
 
@@ -156,15 +161,26 @@ def fill_daemons_statuses_table(statuses_table, daemons_status_info):
                                                               daemons_status_info[ticker]["is_synced"]])
 
 
+def fill_bid(order_data, input_amount):
+    print("filling bid")
+    command = "./subatomic " + order_data["values"][5] + ' "" ' + str(order_data["text"]) + " " + str(input_amount)
+    subatomic_handle = Popen(command, shell=True)
+    return subatomic_handle
+
+
+def fill_ask(order_data, input_amount):
+    print("filling ask")
+    command = "./subatomic " + order_data["values"][6] + ' "" ' + str(order_data["text"]) + " " + str(input_amount)
+    subatomic_handle = Popen(command, shell=True)
+    return subatomic_handle
+
+
 def order_fill_popup(selected_order):
-    # text = ask["id"], values = [ask["price"], ask["baseamount"], ask["relamount"], ask["timestamp"], ask["hash"]
     order_info_string = "ID: " + str(selected_order["text"]) + "\n"
     # TODO: refactor me please by backward conversion function (see refresh_asks_list refresh_bids_list conversion)
-    # TODO: need to add base and rel tickers so user sure what coins he sending!
-    # TODO: convert timestamp to user readable data
     order_info_string += "Price: " + str(selected_order["values"][0]) + "\n"
-    order_info_string += "Base amount: " + str(selected_order["values"][1]) + "\n"
-    order_info_string += "Rel amount: " + str(selected_order["values"][2]) + "\n"
+    order_info_string += "Base amount: " + str(selected_order["values"][1]) + " " + selected_order["values"][5] +  "\n"
+    order_info_string += "Rel amount: " + str(selected_order["values"][2]) + " " + selected_order["values"][6] +  "\n"
     order_info_string += "Timestamp: " + str(selected_order["values"][3]) + "\n"
     order_info_string += "Hash: " + str(selected_order["values"][4]) + "\n"
     popup = tk.Tk()
@@ -175,9 +191,20 @@ def order_fill_popup(selected_order):
     progress_container = tk.Frame(popup)
     order_info = tk.Text(popup, height=10)
     order_info.insert(100.0,  order_info_string)
-    amount_input_label = ttk.Label(popup, text="Input amount to fill:")
+    # ask filling case
+    if selected_order["values"][7] == "ask":
+        amount_input_label = ttk.Label(popup, text="Input amount to fill ask:")
+        amount_input_label = ttk.Label(popup, text="Input " + selected_order["values"][6] + " amount to sell:")
+        fill_order_button = ttk.Button(popup, text="Fill order", command=lambda: fill_ask(selected_order, amount_input.get()))
+        # TODO: add dynamic calculation of second (non-input) amount
+        # you'll get: ...
+    # bid filling case
+    elif selected_order["values"][7] == "bid":
+        amount_input_label = ttk.Label(popup, text="Input " + selected_order["values"][5] + " amount to sell:")
+        fill_order_button = ttk.Button(popup, text="Fill order", command=lambda: fill_bid(selected_order, amount_input.get()))
+        # TODO: add dynamic calculation of second (non-input) amount
+        # you'll get: ...
     amount_input = tk.Entry(popup)
-    fill_order_button = ttk.Button(popup, text="Fill order")
     filling_progress_label = ttk.Label(popup, text="Trade progress:")
     filling_info_text = tk.Text(popup, height=15)
     close_button = ttk.Button(popup, text="Close", command=popup.destroy)

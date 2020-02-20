@@ -20,7 +20,7 @@ root = tk.Tk()
 root.title("Subatomic GUI")
 root.geometry("1200x720")
 root.resizable(False, False)
-supported_coins = ["DEX", "KMD", "PIRATE"]
+supported_coins = ["DEX", "KMD", "PIRATE", "HUSH3", "RICK", "MORTY"]
 is_subatomic_maker_start_needed = tk.StringVar()
 
 # tabs control
