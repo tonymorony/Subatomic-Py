@@ -94,7 +94,7 @@ def refresh_orders_list(rpc_proxy, base, rel, bids_list, asks_list):
 
 
 def start_subatomic_maker_loop(base, rel):
-    command = "./subatomic " + base + ' " " '  + rel
+    command = "./subatomic " + base + ' " " ' + rel
     subatomic_handle = Popen(command, shell=True)
     return subatomic_handle
 
@@ -157,10 +157,41 @@ def fill_daemons_statuses_table(statuses_table, daemons_status_info):
 
 
 def order_fill_popup(selected_order):
+    # text = ask["id"], values = [ask["price"], ask["baseamount"], ask["relamount"], ask["timestamp"], ask["hash"]
+    order_info_string = "ID: " + str(selected_order["text"]) + "\n"
+    # TODO: refactor me please by backward conversion function (see refresh_asks_list refresh_bids_list conversion)
+    # TODO: need to add base and rel tickers so user sure what coins he sending!
+    # TODO: convert timestamp to user readable data
+    order_info_string += "Price: " + str(selected_order["values"][0]) + "\n"
+    order_info_string += "Base amount: " + str(selected_order["values"][1]) + "\n"
+    order_info_string += "Rel amount: " + str(selected_order["values"][2]) + "\n"
+    order_info_string += "Timestamp: " + str(selected_order["values"][3]) + "\n"
+    order_info_string += "Hash: " + str(selected_order["values"][4]) + "\n"
     popup = tk.Tk()
-    popup.wm_title("!")
-    label = ttk.Label(popup, text=selected_order)
-    label.pack(side="top", fill="x", pady=10)
-    B1 = ttk.Button(popup, text="Okay", command = popup.destroy)
-    B1.pack()
+    popup.wm_title("Order fill as a taker")
+    order_info_label = ttk.Label(popup, text="Order info:")
+
+    amount_container = tk.Frame(popup)
+    progress_container = tk.Frame(popup)
+    order_info = tk.Text(popup, height=10)
+    order_info.insert(100.0,  order_info_string)
+    amount_input_label = ttk.Label(popup, text="Input amount to fill:")
+    amount_input = tk.Entry(popup)
+    fill_order_button = ttk.Button(popup, text="Fill order")
+    filling_progress_label = ttk.Label(popup, text="Trade progress:")
+    filling_info_text = tk.Text(popup, height=15)
+    close_button = ttk.Button(popup, text="Close", command=popup.destroy)
+
+    order_info_label.pack(side="top", pady=10)
+    order_info.pack(side="top", fill="x", pady=10)
+    amount_input_label.pack(in_=amount_container, side="left", padx=8)
+    amount_input.pack(in_=amount_container, side="left", padx=8)
+    fill_order_button.pack(in_=amount_container, side="left", padx=8)
+    amount_container.pack()
+
+    filling_progress_label.pack(in_=progress_container)
+    filling_info_text.pack(in_=progress_container,fill="x")
+    progress_container.pack(pady=10)
+    close_button.pack(side="bottom", pady=10)
+
     popup.mainloop()

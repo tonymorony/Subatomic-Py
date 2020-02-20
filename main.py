@@ -5,8 +5,7 @@ from lib import subatomic_lib
 '''
 TODO: 
 - orders filling :) 
-- daemons management
-- balances tracking
+- daemons management - start/stop/set pubkeys
 - checks that user control all needed addresses
 - receiving t/z addr in app settings
 - my open orders (tab2)
@@ -70,6 +69,7 @@ bids_top_label = ttk.Label(tab1, text="Bids: ")
 bids = ttk.Treeview(tab1, columns=orders_columns, selectmode="browse")
 bids.heading('#0', text='ID')
 
+fill_bid_button = ttk.Button(tab1, text="Fill selected bid", command=lambda: subatomic_lib.order_fill_popup(bids.item(bids.focus())))
 fill_bid_button = ttk.Button(tab1, text="Fill selected bid", command=lambda: subatomic_lib.order_fill_popup(bids.item(bids.focus())))
 
 for i in range(1, len(orders_columns)+1):
