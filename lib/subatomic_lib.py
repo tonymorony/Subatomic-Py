@@ -262,3 +262,21 @@ def start_or_stop_selected_daemon(selected_daemon):
         print("Stopping " + str(coin_ticker))
         temp_proxy = def_credentials(coin_ticker)
         temp_proxy.stop()
+
+
+def save_settings_to_file(handle, r_addy, pubkey, z_addy):
+    settings_dict = {}
+    settings_dict["handle"] = handle
+    settings_dict["r_addy"] = r_addy
+    settings_dict["pubkey"] = pubkey
+    settings_dict["z_addy"] = z_addy
+    print("Saving settings")
+    with open('settings.json', 'w+') as settings_file:
+        json.dump(settings_dict, settings_file, ensure_ascii=False, indent=4)
+    popup = tk.Tk()
+    popup.wm_title("Congratulations")
+    save_popup_label = tk.Label(popup, text="settings saved to settings.json file")
+    close_button = ttk.Button(popup, text="Close", command=popup.destroy)
+    save_popup_label.pack()
+    close_button.pack()
+    popup.mainloop()

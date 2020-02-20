@@ -131,8 +131,9 @@ warning_label = tk.Label(tab3, text=("Do not forget to import privkeys for provi
 recv_z_addr_label = tk.Label(tab3, text="Receiving Z address: ")
 recv_z_addr_input = tk.Entry(tab3)
 
-settings_save_button = ttk.Button(tab3, text="Save settings")
-
+settings_save_button = ttk.Button(tab3, text="Save settings", command=lambda : subatomic_lib.save_settings_to_file(handle_input.get(), receiving_r_address_input.get(),
+                                                                                                                   pubkey_input.get(), recv_z_addr_input.get()))
+reset_settings_button = ttk.Button(tab3, text="Reset settings")
 # widgets drawing
 
 # tab0
@@ -183,6 +184,7 @@ recv_z_addr_label.grid(row=4, column=1, pady=(10,0), padx=(10, 0))
 recv_z_addr_input.grid(row=4, column=2, pady=(10,0), padx=(10, 0))
 warning_label.grid(row=5, column=1, pady=(10,0), padx=(10, 0))
 settings_save_button.grid(row=6, column=1, pady=(10,0), padx=(10, 0))
+reset_settings_button.grid(row=6, column=2, pady=(10,0), padx=(10, 0))
 
 # pre-fetching daemons statuses
 root.after(100, lambda: subatomic_lib.fill_daemons_statuses_table(daemons_states, subatomic_lib.fetch_daemons_status(supported_coins)))
