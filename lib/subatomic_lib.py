@@ -235,14 +235,32 @@ def start_or_stop_selected_daemon(selected_daemon):
     except Exception as e:
         print(e)
         print("assetchains.json in same dir is needed!")
-        return 0
     if selected_daemon["values"][0] == "offline":
         if coin_ticker == "KMD":
             starting_params.append("-daemon")
             subprocess.call(starting_params)
         elif coin_ticker == "DEX":
-            # TODO:
-            "Custom start is needed for DEX"
+            try:
+                with open('settings.json', 'r') as settings_file:
+                    settings = json.load(settings_file)
+                    starting_params.append("-handle="+settings["handle"])
+                    starting_params.append("-pubkey="+settings["pubkey"])
+                    starting_params.append("-recvZaddr"+settings["z_addy"])
+                    starting_params.append("-ac_name=DEX")
+                    starting_params.append("-dexp2p=2")
+                    starting_params.append("-ac_supply=999999")
+                    starting_params.append("-addnode=136.243.58.134")
+                    starting_params.append("-daemon")
+                    subprocess.call(starting_params)
+            except Exception as e:
+                print(e)
+                popup = tk.Tk()
+                popup.wm_title("Error")
+                save_popup_label = tk.Label(popup, text="Please set your trading data on settings tab")
+                close_button = ttk.Button(popup, text="Close", command=popup.destroy)
+                save_popup_label.pack()
+                close_button.pack()
+                popup.mainloop()
         else:
             for assetchain in assetchains_data:
                 if coin_ticker == assetchain["ac_name"]:
