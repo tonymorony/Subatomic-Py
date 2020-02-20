@@ -113,27 +113,34 @@ receiving_address = ttk.Entry(tab2)
 place_order_button = ttk.Button(tab2, text="Place order", command=lambda: subatomic_lib.update_text_widget_content(order_creation_text, str(subatomic_lib.place_buy_order(dex_proxy, base_combobox_order_creation.get(), rel_combobox_order_creation.get(),
                                                                                                         base_amount.get(), rel_amount.get(), receiving_address.get(), is_subatomic_maker_start_needed))))
 
-check_subatomic_maker_loop = tk.Checkbutton(tab2, text='Start subatomic maker base->rel loop',  variable=is_subatomic_maker_start_needed,
-                        onvalue=True, offvalue=False)
+check_subatomic_maker_loop = tk.Checkbutton(tab2, text='Start subatomic maker base->rel loop',  variable=is_subatomic_maker_start_needed, onvalue=True, offvalue=False)
 check_subatomic_maker_loop.select()
 
 order_creation_text = tk.Text(tab2, width=100, height=10)
 order_creation_text.configure(state='disabled')
 
 # tab3
+handle_input_var = tk.StringVar()
+receiving_r_address_input_var = tk.StringVar()
+pubkey_input_var = tk.StringVar()
+receiving_z_address_input_var = tk.StringVar()
+
+# loading settings on start
+subatomic_lib.load_settings_from_file(handle_input_var, receiving_r_address_input_var, pubkey_input_var, receiving_z_address_input_var)
+
 handle_label = tk.Label(tab3, text="Handle (nickname up to 15 chars): ")
-handle_input = tk.Entry(tab3)
+handle_input = tk.Entry(tab3, textvariable=handle_input_var)
 receiving_r_address_label = tk.Label(tab3, text="Receiving R address: ")
-receiving_r_address_input = tk.Entry(tab3)
+receiving_r_address_input = tk.Entry(tab3, textvariable=receiving_r_address_input_var)
 pubkey_label = tk.Label(tab3, text="Pubkey (for address above): ")
-pubkey_input = tk.Entry(tab3)
+pubkey_input = tk.Entry(tab3, textvariable=pubkey_input_var)
 warning_label = tk.Label(tab3, text=("Do not forget to import privkeys for provided R address to DEX and other assetchains, and Z address key to PIRATE and restart the daemon after import!"))
 recv_z_addr_label = tk.Label(tab3, text="Receiving Z address: ")
-recv_z_addr_input = tk.Entry(tab3)
+recv_z_addr_input = tk.Entry(tab3, textvariable=receiving_z_address_input_var)
 
-settings_save_button = ttk.Button(tab3, text="Save settings", command=lambda : subatomic_lib.save_settings_to_file(handle_input.get(), receiving_r_address_input.get(),
+settings_save_button = ttk.Button(tab3, text="Save settings", command=lambda: subatomic_lib.save_settings_to_file(handle_input.get(), receiving_r_address_input.get(),
                                                                                                                    pubkey_input.get(), recv_z_addr_input.get()))
-reset_settings_button = ttk.Button(tab3, text="Reset settings")
+reset_settings_button = ttk.Button(tab3, text="Reset settings from file", command=lambda: subatomic_lib.load_settings_from_file(handle_input_var, receiving_r_address_input_var, pubkey_input_var, receiving_z_address_input_var))
 # widgets drawing
 
 # tab0

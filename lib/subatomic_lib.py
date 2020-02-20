@@ -280,3 +280,16 @@ def save_settings_to_file(handle, r_addy, pubkey, z_addy):
     save_popup_label.pack()
     close_button.pack()
     popup.mainloop()
+
+
+def load_settings_from_file(handle_input_var, receiving_r_address_input_var, pubkey_input_var, receiving_z_address_input_var):
+    try:
+        with open('settings.json', 'r') as settings_file:
+            settings = json.load(settings_file)
+            handle_input_var.set(settings["handle"])
+            receiving_r_address_input_var.set(settings["r_addy"])
+            pubkey_input_var.set(settings["pubkey"])
+            receiving_z_address_input_var.set(settings["z_addy"])
+    except Exception as e:
+        print(e)
+        print("Please set your trading data on settings tab")
