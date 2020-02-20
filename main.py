@@ -15,12 +15,14 @@ TODO:
 
 dex_proxy = subatomic_lib.def_credentials("DEX")
 
+
 # main window
 root = tk.Tk()
 root.title("Subatomic GUI")
 root.geometry("1200x640")
 root.resizable(False, False)
-supported_coins = ["KMD", "PIRATE"]
+supported_coins = ["DEX", "KMD", "PIRATE"]
+is_subatomic_maker_start_needed = tk.StringVar()
 
 # tabs control
 tab_parent = ttk.Notebook(root)
@@ -88,7 +90,11 @@ receiving_address_label = ttk.Label(tab2, text="Receiving address: ")
 receiving_address = ttk.Entry(tab2)
 
 place_order_button = ttk.Button(tab2, text="Place order", command=lambda: subatomic_lib.update_text_widget_content(order_creation_text, str(subatomic_lib.place_buy_order(dex_proxy, base_combobox_order_creation.get(), rel_combobox_order_creation.get(),
-                                                                                                        base_amount.get(), rel_amount.get(), receiving_address.get()))))
+                                                                                                        base_amount.get(), rel_amount.get(), receiving_address.get(), is_subatomic_maker_start_needed))))
+
+check_subatomic_maker_loop = tk.Checkbutton(tab2, text='Start subatomic maker base->rel loop',  variable=is_subatomic_maker_start_needed,
+                        onvalue=True, offvalue=False)
+check_subatomic_maker_loop.select()
 
 order_creation_text = tk.Text(tab2, width=100, height=10)
 order_creation_text.configure(state='disabled')
@@ -126,7 +132,9 @@ rel_combobox_order_creation.grid(row=2, column=2, pady=(10,0), padx=(10, 0))
 rel_amount_label.grid(row=2, column=3, pady=(10,0), padx=(10, 0))
 rel_amount.grid(row=2, column=4, pady=(10,0), padx=(10, 0))
 place_order_button.grid(row=3, column=1, pady=(10,0), padx=(10, 0))
+check_subatomic_maker_loop.grid(row=3, column=2, pady=(10,0), padx=(10, 0))
 order_creation_text.grid(row=4, column=1, columnspan=5, pady=(10,0), padx=(10, 0))
+
 
 # pre-fetching daemons statuses
 root.after(100, lambda: subatomic_lib.fill_daemons_statuses_table(daemons_states, subatomic_lib.fetch_daemons_status(supported_coins)))

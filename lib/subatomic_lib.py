@@ -2,7 +2,7 @@ import platform
 import os
 import re
 import slickrpc
-
+from subprocess import Popen
 
 class CustomProxy(slickrpc.Proxy):
     def __init__(self,
@@ -90,7 +90,13 @@ def refresh_orders_list(rpc_proxy, base, rel, bids_list, asks_list):
     refresh_asks_list(rpc_proxy, base, rel, asks_list)
 
 
-def place_buy_order(rpc_proxy, base, rel, base_amount, rel_amount, receiving_address):
+def start_subatomic_maker_loop(base, rel):
+    command = "./subatomic " + base + ' " " '  + rel
+    subatomic_handle = Popen(command, shell=True)
+    return subatomic_handle
+
+
+def place_buy_order(rpc_proxy, base, rel, base_amount, rel_amount, receiving_address, is_subatomic_maker_start_needed):
     print(base)
     print(rel)
     print(base_amount)
@@ -99,6 +105,8 @@ def place_buy_order(rpc_proxy, base, rel, base_amount, rel_amount, receiving_add
     dex_pubkey = rpc_proxy.DEX_stats()["publishable_pubkey"]
     order_data = rpc_proxy.DEX_broadcast(receiving_address, "5", base, rel, dex_pubkey, str(base_amount), str(rel_amount))
     print(order_data)
+    if is_subatomic_maker_start_needed:
+        start_subatomic_maker_loop(base, rel)
     return order_data
 
 
