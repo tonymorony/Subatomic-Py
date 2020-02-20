@@ -29,7 +29,7 @@ try:
         assetchains_data = json.load(assetchains_json)
         for assetchain in assetchains_data:
             supported_coins.append(assetchain["ac_name"])
-        supported_coins.append("KMD")
+        supported_coins.insert(0, "KMD")
 except Exception as e:
     print(e)
     supported_coins = ["DEX", "KMD", "PIRATE", "HUSH3", "RICK", "MORTY"]
@@ -49,13 +49,14 @@ tab_parent.pack(expand=True, fill="both")
 # widgets creation
 # tab 0
 status_columns = ["status", "balance", "blocks", "longest chain", "is synced"]
-daemons_states = ttk.Treeview(tab0, columns=status_columns)
+daemons_states = ttk.Treeview(tab0, columns=status_columns, selectmode="browse")
 daemons_states.heading('#0', text='ticker')
 for i in range(1, len(status_columns)+1):
     daemons_states.heading("#"+str(i), text=status_columns[i-1])
 
 get_daemons_states_button = ttk.Button(tab0, text="Update statuses", command=lambda: subatomic_lib.fill_daemons_statuses_table(daemons_states,
                                                                                                                             subatomic_lib.fetch_daemons_status(supported_coins)))
+start_stop_daemon_button = ttk.Button(tab0, text="Start/stop selected daemon", command=lambda: subatomic_lib.start_or_stop_selected_daemon(daemons_states.item(daemons_states.focus())))
 
 # tab 1
 base_selector_orderbook = ttk.Label(tab1, text="Select base: ")
@@ -119,7 +120,8 @@ order_creation_text.configure(state='disabled')
 # widgets drawing
 
 # tab0
-get_daemons_states_button.pack()
+get_daemons_states_button.pack(side="top", pady=10)
+start_stop_daemon_button.pack(side="top", pady=10)
 daemons_states.pack(fill=tk.BOTH, expand=1)
 
 

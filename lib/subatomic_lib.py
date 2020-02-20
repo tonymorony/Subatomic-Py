@@ -4,7 +4,8 @@ import re
 import slickrpc
 import tkinter as tk
 from tkinter import ttk
-from subprocess import Popen
+import subprocess
+import json
 
 
 # just to set custom timeout
@@ -100,7 +101,7 @@ def refresh_orders_list(rpc_proxy, base, rel, bids_list, asks_list):
 
 def start_subatomic_maker_loop(base, rel):
     command = "./subatomic " + rel + ' "" ' + base
-    subatomic_handle = Popen(command, shell=True)
+    subatomic_handle = subprocess.Popen(command, shell=True)
     return subatomic_handle
 
 
@@ -164,14 +165,14 @@ def fill_daemons_statuses_table(statuses_table, daemons_status_info):
 def fill_bid(order_data, input_amount):
     print("filling bid")
     command = "./subatomic " + order_data["values"][5] + ' "" ' + str(order_data["text"]) + " " + str(input_amount)
-    subatomic_handle = Popen(command, shell=True)
+    subatomic_handle = subprocess.Popen(command, shell=True)
     return subatomic_handle
 
 
 def fill_ask(order_data, input_amount):
     print("filling ask")
     command = "./subatomic " + order_data["values"][6] + ' "" ' + str(order_data["text"]) + " " + str(input_amount)
-    subatomic_handle = Popen(command, shell=True)
+    subatomic_handle = subprocess.Popen(command, shell=True)
     return subatomic_handle
 
 
@@ -222,3 +223,41 @@ def order_fill_popup(selected_order):
     close_button.pack(side="bottom", pady=10)
 
     popup.mainloop()
+
+
+def start_or_stop_selected_daemon(selected_daemon):
+    print(selected_daemon)
+    coin_ticker = selected_daemon["text"]
+    starting_params = ["./komodod"]
+    try:
+        with open("assetchains.json") as assetchains_json:
+            assetchains_data = json.load(assetchains_json)
+    except Exception as e:
+        print(e)
+        print("assetchains,json in same dir is needed!")
+    if selected_daemon["values"][0] == "offline":
+        if coin_ticker == "KMD":
+            starting_params.append("-daemon")
+            subprocess.call(starting_params)
+        elif coin_ticker == "DEX":
+            # TODO:
+            "Custom start is needed for DEX"
+        else:
+            for assetchain in assetchains_data:
+                if coin_ticker == assetchain["ac_name"]:
+                    for param in assetchain:
+                        if param != "addnode":
+                            starting_params.append("-" + param + "=" + assetchain[param])
+                        # TODO: not for all ACs addnode match with this one - might not work for some daemons...
+                        if "addnode" not in assetchain.keys():
+                            starting_params.append("-addnode=95.213.238.98")
+                        else:
+                            for node in assetchain["addnode"]:
+                                starting_params.append("-addnode="+node)
+            starting_params.append("-daemon")
+            print(starting_params)
+            subprocess.call(starting_params)
+    elif selected_daemon["values"][0] == "online":
+        print("Stopping " + str(coin_ticker))
+        temp_proxy = def_credentials(coin_ticker)
+        temp_proxy.stop()
