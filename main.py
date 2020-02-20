@@ -6,10 +6,8 @@ import json
 
 '''
 TODO: 
-- orders filling :) 
-- daemons management - start/stop/set pubkeys
+- set pubkeys, import privkeys via app
 - checks that user control all needed addresses
-- receiving t/z addr in app settings
 - my open orders (tab2)
 - trades history (tab2) - split by analogy with tab1 ?
 '''
