@@ -2,7 +2,10 @@ import platform
 import os
 import re
 import slickrpc
+import tkinter as tk
+from tkinter import ttk
 from subprocess import Popen
+
 
 class CustomProxy(slickrpc.Proxy):
     def __init__(self,
@@ -151,3 +154,13 @@ def fill_daemons_statuses_table(statuses_table, daemons_status_info):
         statuses_table.insert("", "end", text=ticker, values=[daemons_status_info[ticker]["status"], daemons_status_info[ticker]["balance"],
                                                               daemons_status_info[ticker]["blocks"], daemons_status_info[ticker]["longestchain"],
                                                               daemons_status_info[ticker]["is_synced"]])
+
+
+def order_fill_popup(selected_order):
+    popup = tk.Tk()
+    popup.wm_title("!")
+    label = ttk.Label(popup, text=selected_order)
+    label.pack(side="top", fill="x", pady=10)
+    B1 = ttk.Button(popup, text="Okay", command = popup.destroy)
+    B1.pack()
+    popup.mainloop()

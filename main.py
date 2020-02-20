@@ -19,7 +19,7 @@ dex_proxy = subatomic_lib.def_credentials("DEX")
 # main window
 root = tk.Tk()
 root.title("Subatomic GUI")
-root.geometry("1200x640")
+root.geometry("1200x720")
 root.resizable(False, False)
 supported_coins = ["DEX", "KMD", "PIRATE"]
 is_subatomic_maker_start_needed = tk.StringVar()
@@ -61,12 +61,16 @@ display_orderbook_button = ttk.Button(tab1, text="Display orderbook",
 orders_columns = ["price", "baseamount", "relamount", "timestamp", "hash"]
 
 asks_top_label = ttk.Label(tab1, text="Asks: ")
-asks = ttk.Treeview(tab1, columns=orders_columns)
+asks = ttk.Treeview(tab1, columns=orders_columns, selectmode="browse")
 asks.heading('#0', text='ID')
 
+fill_ask_button = ttk.Button(tab1, text="Fill selected ask", command=lambda: subatomic_lib.order_fill_popup(asks.item(asks.focus())))
+
 bids_top_label = ttk.Label(tab1, text="Bids: ")
-bids = ttk.Treeview(tab1, columns=orders_columns)
+bids = ttk.Treeview(tab1, columns=orders_columns, selectmode="browse")
 bids.heading('#0', text='ID')
+
+fill_bid_button = ttk.Button(tab1, text="Fill selected bid", command=lambda: subatomic_lib.order_fill_popup(bids.item(bids.focus())))
 
 for i in range(1, len(orders_columns)+1):
     asks.heading("#"+str(i), text=orders_columns[i-1])
@@ -116,9 +120,11 @@ display_orderbook_button.grid(row=1, column=5, pady=(10,0), padx=(20, 10))
 
 asks_top_label.grid(row=2, column=1, columnspan=5, padx=(10,10), pady=(30, 0))
 asks.grid(row=3, column=1, columnspan=5, padx=(10,10), pady=(10, 0))
+fill_ask_button.grid(row=4, column=1, columnspan=5, padx=(10,10), pady=(10, 0))
 
-bids_top_label.grid(row=4, column=1, columnspan=5, padx=(10,10), pady=(10, 0))
-bids.grid(row=5, column=1, columnspan=5, padx=(10,10), pady=(10, 0))
+bids_top_label.grid(row=5, column=1, columnspan=5, padx=(10,10), pady=(10, 0))
+bids.grid(row=6, column=1, columnspan=5, padx=(10,10), pady=(10, 0))
+fill_bid_button.grid(row=7, column=1, columnspan=5, padx=(10,10), pady=(10, 0))
 
 # tab2
 base_selector_order_creation.grid(row=1, column=1, pady=(10,0), padx=(10, 0))
@@ -134,7 +140,6 @@ rel_amount.grid(row=2, column=4, pady=(10,0), padx=(10, 0))
 place_order_button.grid(row=3, column=1, pady=(10,0), padx=(10, 0))
 check_subatomic_maker_loop.grid(row=3, column=2, pady=(10,0), padx=(10, 0))
 order_creation_text.grid(row=4, column=1, columnspan=5, pady=(10,0), padx=(10, 0))
-
 
 # pre-fetching daemons statuses
 root.after(100, lambda: subatomic_lib.fill_daemons_statuses_table(daemons_states, subatomic_lib.fetch_daemons_status(supported_coins)))
