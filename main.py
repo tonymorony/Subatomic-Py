@@ -41,12 +41,15 @@ tab_parent = ttk.Notebook(root)
 tab0 = ttk.Frame(tab_parent)
 tab1 = ttk.Frame(tab_parent)
 tab2 = ttk.Frame(tab_parent)
+tab3 = ttk.Frame(tab_parent)
 tab_parent.add(tab0, text="Daemons control")
 tab_parent.add(tab1, text="Orderbook")
 tab_parent.add(tab2, text="Create order")
+tab_parent.add(tab3, text="Settings")
 tab_parent.pack(expand=True, fill="both")
 
 # widgets creation
+# TODO: add switch to not show offline daemons
 # tab 0
 status_columns = ["status", "balance", "blocks", "longest chain", "is synced"]
 daemons_states = ttk.Treeview(tab0, columns=status_columns, selectmode="browse")
@@ -117,6 +120,19 @@ check_subatomic_maker_loop.select()
 order_creation_text = tk.Text(tab2, width=100, height=10)
 order_creation_text.configure(state='disabled')
 
+# tab3
+handle_label = tk.Label(tab3, text="Handle (nickname up to 15 chars): ")
+handle_input = tk.Entry(tab3)
+receiving_r_address_label = tk.Label(tab3, text="Receiving R address: ")
+receiving_r_address_input = tk.Entry(tab3)
+pubkey_label = tk.Label(tab3, text="Pubkey (for address above): ")
+pubkey_input = tk.Entry(tab3)
+warning_label = tk.Label(tab3, text=("Do not forget to import privkeys for provided R address to DEX and other assetchains, and Z address key to PIRATE and restart the daemon after import!"))
+recv_z_addr_label = tk.Label(tab3, text="Receiving Z address: ")
+recv_z_addr_input = tk.Entry(tab3)
+
+settings_save_button = ttk.Button(tab3, text="Save settings")
+
 # widgets drawing
 
 # tab0
@@ -155,6 +171,18 @@ rel_amount.grid(row=2, column=4, pady=(10,0), padx=(10, 0))
 place_order_button.grid(row=3, column=1, pady=(10,0), padx=(10, 0))
 check_subatomic_maker_loop.grid(row=3, column=2, pady=(10,0), padx=(10, 0))
 order_creation_text.grid(row=4, column=1, columnspan=5, pady=(10,0), padx=(10, 0))
+
+# tab3
+handle_label.grid(row=1, column=1, pady=(10,0), padx=(10, 0))
+handle_input.grid(row=1, column=2, pady=(10,0), padx=(10, 0))
+receiving_r_address_label.grid(row=2, column=1, pady=(10,0), padx=(10, 0))
+receiving_r_address_input.grid(row=2, column=2, pady=(10,0), padx=(10, 0))
+pubkey_label.grid(row=3, column=1, pady=(10,0), padx=(10, 0))
+pubkey_input.grid(row=3, column=2, pady=(10,0), padx=(10, 0))
+recv_z_addr_label.grid(row=4, column=1, pady=(10,0), padx=(10, 0))
+recv_z_addr_input.grid(row=4, column=2, pady=(10,0), padx=(10, 0))
+warning_label.grid(row=5, column=1, pady=(10,0), padx=(10, 0))
+settings_save_button.grid(row=6, column=1, pady=(10,0), padx=(10, 0))
 
 # pre-fetching daemons statuses
 root.after(100, lambda: subatomic_lib.fill_daemons_statuses_table(daemons_states, subatomic_lib.fetch_daemons_status(supported_coins)))

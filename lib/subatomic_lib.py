@@ -234,7 +234,8 @@ def start_or_stop_selected_daemon(selected_daemon):
             assetchains_data = json.load(assetchains_json)
     except Exception as e:
         print(e)
-        print("assetchains,json in same dir is needed!")
+        print("assetchains.json in same dir is needed!")
+        return 0
     if selected_daemon["values"][0] == "offline":
         if coin_ticker == "KMD":
             starting_params.append("-daemon")
