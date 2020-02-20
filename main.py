@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 from lib import subatomic_lib
+import json
+
 
 '''
 TODO: 
@@ -20,7 +22,18 @@ root = tk.Tk()
 root.title("Subatomic GUI")
 root.geometry("1200x720")
 root.resizable(False, False)
-supported_coins = ["DEX", "KMD", "PIRATE", "HUSH3", "RICK", "MORTY"]
+
+try:
+    with open("assetchains.json") as assetchains_json:
+        supported_coins = []
+        assetchains_data = json.load(assetchains_json)
+        for assetchain in assetchains_data:
+            supported_coins.append(assetchain["ac_name"])
+        supported_coins.append("KMD")
+except Exception as e:
+    print(e)
+    supported_coins = ["DEX", "KMD", "PIRATE", "HUSH3", "RICK", "MORTY"]
+
 is_subatomic_maker_start_needed = tk.StringVar()
 
 # tabs control
