@@ -283,11 +283,7 @@ def start_or_stop_selected_daemon(selected_daemon):
 
 
 def save_settings_to_file(handle, r_addy, pubkey, z_addy):
-    settings_dict = {}
-    settings_dict["handle"] = handle
-    settings_dict["r_addy"] = r_addy
-    settings_dict["pubkey"] = pubkey
-    settings_dict["z_addy"] = z_addy
+    settings_dict = {"handle": handle, "r_addy": r_addy, "pubkey": pubkey, "z_addy": z_addy}
     print("Saving settings")
     with open('settings.json', 'w+') as settings_file:
         json.dump(settings_dict, settings_file, ensure_ascii=False, indent=4)
@@ -311,3 +307,26 @@ def load_settings_from_file(handle_input_var, receiving_r_address_input_var, pub
     except Exception as e:
         print(e)
         print("Please set your trading data on settings tab")
+
+
+def load_subatomic_json(subatomic_json_text_field):
+    try:
+        with open('subatomic.json', 'r') as subatomic_json:
+            subatomic_text = json.load(subatomic_json)
+            subatomic_json_text_field.delete('1.0', tk.END)
+            subatomic_json_text_field.insert(tk.END, subatomic_text)
+    except Exception as e:
+        print(e)
+        print("Can't find subatomic.json file!")
+
+
+def save_subatomic_json_to_file(file_content):
+    with open('subatomic.json', 'w+') as subatomic_json:
+        json.dump(file_content, subatomic_json, ensure_ascii=False, indent=4)
+    popup = tk.Tk()
+    popup.wm_title("Congratulations")
+    save_popup_label = tk.Label(popup, text="saved to subatomic.json file")
+    close_button = ttk.Button(popup, text="Close", command=popup.destroy)
+    save_popup_label.pack()
+    close_button.pack()
+    popup.mainloop()

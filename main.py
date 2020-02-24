@@ -125,8 +125,6 @@ receiving_r_address_input_var = tk.StringVar()
 pubkey_input_var = tk.StringVar()
 receiving_z_address_input_var = tk.StringVar()
 
-# loading settings on start
-subatomic_lib.load_settings_from_file(handle_input_var, receiving_r_address_input_var, pubkey_input_var, receiving_z_address_input_var)
 
 handle_label = tk.Label(tab3, text="Handle (nickname up to 15 chars): ")
 handle_input = tk.Entry(tab3, textvariable=handle_input_var)
@@ -134,13 +132,20 @@ receiving_r_address_label = tk.Label(tab3, text="Receiving R address: ")
 receiving_r_address_input = tk.Entry(tab3, textvariable=receiving_r_address_input_var)
 pubkey_label = tk.Label(tab3, text="Pubkey (for address above): ")
 pubkey_input = tk.Entry(tab3, textvariable=pubkey_input_var)
-warning_label = tk.Label(tab3, text=("Do not forget to import privkeys for provided R address to DEX and other assetchains, and Z address key to PIRATE and restart the daemon after import!"))
+warning_label = tk.Message(tab3, text=("Do not forget to import privkeys for provided R address to DEX and other assetchains, and Z address key to PIRATE and restart the daemon after import!"), width=300)
 recv_z_addr_label = tk.Label(tab3, text="Receiving Z address: ")
 recv_z_addr_input = tk.Entry(tab3, textvariable=receiving_z_address_input_var)
 
 settings_save_button = ttk.Button(tab3, text="Save settings", command=lambda: subatomic_lib.save_settings_to_file(handle_input.get(), receiving_r_address_input.get(),
                                                                                                                    pubkey_input.get(), recv_z_addr_input.get()))
 reset_settings_button = ttk.Button(tab3, text="Reset settings from file", command=lambda: subatomic_lib.load_settings_from_file(handle_input_var, receiving_r_address_input_var, pubkey_input_var, receiving_z_address_input_var))
+
+subatomic_json_label = tk.Label(tab3, text="subatomic.json content:")
+subatomic_json_text = tk.Text(tab3, height=15)
+
+subatomic_json_save_button = ttk.Button(tab3, text="Save subatomic.json", command=lambda: subatomic_lib.save_subatomic_json_to_file(subatomic_json_text.get("1.0",tk.END)))
+subatomic_json_reset_button = ttk.Button(tab3, text="Reset subatomic.json from file", command=lambda: subatomic_lib.load_subatomic_json(subatomic_json_text))
+
 # widgets drawing
 
 # tab0
@@ -192,6 +197,16 @@ recv_z_addr_input.grid(row=4, column=2, pady=(10,0), padx=(10, 0))
 warning_label.grid(row=5, column=1, pady=(10,0), padx=(10, 0))
 settings_save_button.grid(row=6, column=1, pady=(10,0), padx=(10, 0))
 reset_settings_button.grid(row=6, column=2, pady=(10,0), padx=(10, 0))
+subatomic_json_label.grid(row=7, column=1, pady=(10,0), padx=(10, 0))
+subatomic_json_text.grid(row=8, column=1, pady=(10,0), padx=(10, 0), columnspan=1, sticky='we')
+subatomic_json_save_button.grid(row=9, column=1, pady=(10,0), padx=(10, 0))
+subatomic_json_reset_button.grid(row=9, column=2, pady=(10,0), padx=(10, 0))
+
+# loading settings on start
+subatomic_lib.load_settings_from_file(handle_input_var, receiving_r_address_input_var, pubkey_input_var, receiving_z_address_input_var)
+
+# loading subatomic.json on start
+subatomic_lib.load_subatomic_json(subatomic_json_text)
 
 # pre-fetching daemons statuses
 root.after(100, lambda: subatomic_lib.fill_daemons_statuses_table(daemons_states, subatomic_lib.fetch_daemons_status(supported_coins)))
